@@ -12,14 +12,14 @@ const StartupCard = ({ startup }: StartupCardProps) => {
     <Card className="overflow-hidden bg-white hover:shadow-lg transition-shadow duration-300">
       <CardContent className="p-6">
         <div className="flex items-start space-x-4">
-          <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+          {/* <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
             <Image
               src={startup.startupLogo || '/default-startup-logo.png'}
               alt={startup.startupName}
               fill
               className="object-cover"
             />
-          </div>
+          </div> */}
           <div className="flex-1 min-w-0">
             <h3 className="text-lg font-semibold text-gray-900 truncate">
               {startup.startupName}

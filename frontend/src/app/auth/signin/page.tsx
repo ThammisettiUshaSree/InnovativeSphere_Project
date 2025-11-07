@@ -158,14 +158,14 @@ export default function SignIn() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <Link href="/" className="flex items-center justify-center gap-2" aria-label="Go to home page">
           <Image 
-            src="/logo.png" 
-            alt="StartNet Logo" 
+            src="/logo3.jpg" 
+            alt="InnovativeSphere Logo" 
             width={40} 
             height={40}
             className="w-10 h-10"
             priority
           />
-          <span className="text-2xl font-bold text-foreground">StartNet</span>
+          <span className="text-2xl font-bold text-foreground">InnovativeSphere</span>
         </Link>
         <h1 className="mt-6 text-center text-3xl font-bold tracking-tight text-foreground">
           Sign in to your account

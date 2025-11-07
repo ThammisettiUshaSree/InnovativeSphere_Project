@@ -1,8 +1,12 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
-const path = require('path');
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
+const swaggerUi = require("swagger-ui-express");
+const path = require("path");
+
+// Load Swagger spec
+const swaggerDocument = require("./swagger.json"); // Adjust path if needed
 
 // Load environment variables
 dotenv.config();
@@ -10,50 +14,59 @@ dotenv.config();
 // Initialize express app
 const app = express();
 
-// Configure CORS - make it more flexible for contributors
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// Configure CORS
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Database connection with better error handling
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected successfully'))
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1); // Exit process with failure
-});
+// Database connection
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
+  });
 
 // Import routes
-const authRoutes = require('./routes/auth');
-const passwordRoutes = require('./routes/auth/passwordRoutes');
+const authRoutes = require("./routes/auth");
+const passwordRoutes = require("./routes/auth/passwordRoutes");
 
 // Mount routes
-app.use('/api/auth', authRoutes);
-app.use('/api/auth/password', passwordRoutes);
-app.use('/api/profile', require('./routes/entrepreneur/profileRoutes'));
-app.use('/api/entrepreneur/startups', require('./routes/entrepreneur/my-startup-routes'));
-app.use('/api/entrepreneur', require('./routes/entrepreneur/startupLogoRoutes'));
-app.use('/api/investor/profile', require('./routes/investor/profileRoutes'));
-app.use('/api/investor/startups', require('./routes/investor/startupRoutes'));
-app.use('/api/investor/settings', require('./routes/investor/settingsRoutes'));
+app.use("/api/auth", authRoutes);
+app.use("/api/auth/password", passwordRoutes);
+app.use("/api/profile", require("./routes/entrepreneur/profileRoutes"));
+app.use(
+  "/api/entrepreneur/startups",
+  require("./routes/entrepreneur/my-startup-routes")
+);
+app.use(
+  "/api/entrepreneur",
+  require("./routes/entrepreneur/startupLogoRoutes")
+);
+app.use("/api/investor/profile", require("./routes/investor/profileRoutes"));
+app.use("/api/investor/startups", require("./routes/investor/startupRoutes"));
+app.use("/api/investor/settings", require("./routes/investor/settingsRoutes"));
 
-// API documentation route
-app.get('/', (req, res) => {
+// Swagger API documentation route
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Root route
+app.get("/", (req, res) => {
   const html = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>StartNet API</title>
         <style>
             body {
@@ -111,32 +124,31 @@ app.get('/', (req, res) => {
             <p class="status">Backend Service</p>
             <div class="badge">Running</div>
             <div class="links">
-                <p>Visit our <a href="https://github.com/yourusername/StartNet-Web" target="_blank">GitHub repository</a> to contribute</p>
+                <p>Visit our <a href="https://github.com/yourusername/StartNet-Web" target="_blank" rel="noopener noreferrer">GitHub repository</a> to contribute</p>
                 <p>View <a href="/api-docs">API Documentation</a></p>
             </div>
         </div>
     </body>
     </html>
   `;
-  
   res.send(html);
 });
 
 // Global error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
-    status: 'error',
-    message: 'Internal server error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    status: "error",
+    message: "Internal server error",
+    error: process.env.NODE_ENV === "development" ? err.message : undefined,
   });
 });
 
 // Handle 404 errors
 app.use((req, res) => {
   res.status(404).json({
-    status: 'error',
-    message: 'Endpoint not found'
+    status: "error",
+    message: "Endpoint not found",
   });
 });
 
@@ -144,14 +156,15 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
-  console.log(`📚 API documentation available at: http://localhost:${PORT}/api-docs`);
+  console.log(
+    `📚 API documentation available at: http://localhost:${PORT}/api-docs`
+  );
 });
 
-// Handle unexpected errors
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled promise rejection:', err);
-  // Don't exit in production, but log it properly
-  if (process.env.NODE_ENV === 'development') {
+// Handle unexpected promise rejections
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled promise rejection:", err);
+  if (process.env.NODE_ENV === "development") {
     process.exit(1);
   }
 });

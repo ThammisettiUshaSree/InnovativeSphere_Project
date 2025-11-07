@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from "@vercel/analytics/next";
 import { Montserrat } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
@@ -10,8 +10,12 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "StartNet - Connect & Collaborate",
-  description: "A professional networking platform for startups and entrepreneurs",
+  title: "InnovativeSphere - Connect & Collaborate",
+  description:
+    "A professional networking platform for startups and entrepreneurs",
+     icons: {
+    icon: "/logo3.jpg", 
+     },
 };
 
 export default function RootLayout({
@@ -29,21 +33,21 @@ export default function RootLayout({
           toastOptions={{
             duration: 4000,
             style: {
-              background: '#333',
-              color: '#fff',
+              background: "#333",
+              color: "#fff",
             },
             success: {
               duration: 3000,
               iconTheme: {
-                primary: '#4CAF50',
-                secondary: '#fff',
+                primary: "#4CAF50",
+                secondary: "#fff",
               },
             },
             error: {
               duration: 4000,
               iconTheme: {
-                primary: '#f44336',
-                secondary: '#fff',
+                primary: "#f44336",
+                secondary: "#fff",
               },
             },
           }}

@@ -101,10 +101,10 @@ const InvestorStartupsPage = () => {
         throw new Error(errorData.message || `HTTP error ${response.status}`);
       }
 
-      const data: StartupResponse = await response.json();
-      setStartups(data.startups);
-      setTotalPages(data.pagination.pages);
-      setTotalStartups(data.pagination.total);
+      const raw: StartupResponse = await response.json();
+      setStartups(raw.data.startups);
+      setTotalPages(raw.data.pagination.pages);
+      setTotalStartups(raw.data.pagination.total);
     } catch (error) {
       console.error('Error fetching startups:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch startups';

@@ -201,7 +201,7 @@ export default function EntrepreneurSidebar({ children }: SidebarProps) {
             >
               <div className="flex-shrink-0">
                 <Image
-                  src="/logo.png"
+                  src="/logo3.jpg"
                   alt=""
                   width={36}
                   height={36}
@@ -212,7 +212,7 @@ export default function EntrepreneurSidebar({ children }: SidebarProps) {
               <span className={`text-xl font-bold whitespace-nowrap ml-3 text-gray-900 ${
                 isCollapsed ? 'hidden' : 'block'
               }`}>
-                StartNet
+                InnovativeSphere
               </span>
             </Link>
           </div>
@@ -273,28 +273,7 @@ export default function EntrepreneurSidebar({ children }: SidebarProps) {
           </ul>
         </nav>
 
-        {/* User Info Section */}
-        <div className={`p-3 ${isCollapsed ? 'hidden' : 'block'}`}>
-          <div className="space-y-1">
-            <p className="text-xs uppercase text-gray-500 tracking-wider font-medium">
-              Account
-            </p>
-            <div className="flex items-center space-x-3 rounded-lg p-2 bg-gray-50">
-              <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-                {/* Show first letter of user's name or default */}
-                <span className="text-sm font-medium">E</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  Entrepreneur
-                </p>
-                <p className="text-xs text-gray-500 truncate">
-                  entrepreneur@example.com
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Logout Button */}
         <div className="mt-auto p-3 border-t border-gray-200">

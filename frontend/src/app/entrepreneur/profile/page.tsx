@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import EntrepreneurSidebar from '@/app/sidebar/entrepreneur/page';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { toast } from 'react-hot-toast';
-import { API_ROUTES } from '@/config/api';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import Cropper from 'react-easy-crop';
-import { readFile, cropImage } from '@/lib/imageUtils';
-import { PlusIcon, Cross2Icon } from '@radix-ui/react-icons';
+import React, { useState, useEffect, useCallback } from "react";
+import EntrepreneurSidebar from "@/app/sidebar/entrepreneur/page";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { toast } from "react-hot-toast";
+import { API_ROUTES } from "@/config/api";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Cropper from "react-easy-crop";
+import { readFile, cropImage } from "@/lib/imageUtils";
+import { PlusIcon, Cross2Icon } from "@radix-ui/react-icons";
 
 interface SocialMedia {
   platform: string;
@@ -33,36 +33,36 @@ interface Profile {
 }
 
 const SOCIAL_MEDIA_PLATFORMS = [
-  'LinkedIn',
-  'Twitter',
-  'Instagram',
-  'GitHub',
-  'Facebook',
-  'YouTube'
+  "LinkedIn",
+  "Twitter",
+  "Instagram",
+  "GitHub",
+  "Facebook",
+  "YouTube",
 ];
 
 const PLATFORM_PLACEHOLDERS = {
-  LinkedIn: 'https://linkedin.com/in/username',
-  Twitter: 'https://twitter.com/username',
-  Instagram: 'https://instagram.com/username',
-  GitHub: 'https://github.com/username',
-  Facebook: 'https://facebook.com/username',
-  YouTube: 'https://youtube.com/@username'
+  LinkedIn: "https://linkedin.com/in/username",
+  Twitter: "https://twitter.com/username",
+  Instagram: "https://instagram.com/username",
+  GitHub: "https://github.com/username",
+  Facebook: "https://facebook.com/username",
+  YouTube: "https://youtube.com/@username",
 };
 
 const EntrepreneurProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [newSkill, setNewSkill] = useState('');
+  const [newSkill, setNewSkill] = useState("");
   const [profile, setProfile] = useState<Profile>({
-    fullName: '',
-    email: '',
-    phone: '',
-    location: '',
-    bio: '',
-    profilePicture: '',
-    socialMedia: [{ platform: 'LinkedIn', url: '' }],
-    skills: []
+    fullName: "",
+    email: "",
+    phone: "",
+    location: "",
+    bio: "",
+    profilePicture: "",
+    socialMedia: [{ platform: "LinkedIn", url: "" }],
+    skills: [],
   });
   const router = useRouter();
 
@@ -71,22 +71,22 @@ const EntrepreneurProfilePage = () => {
       setLoading(true);
       const response = await fetch(API_ROUTES.PROFILE.GET, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
       const data = await response.json();
-      
+
       if (response.ok) {
         setProfile(data);
       } else if (data.isExpired) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        router.push('/auth/signin');
-        toast.error('Session expired. Please sign in again.');
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        router.push("/auth/signin");
+        toast.error("Session expired. Please sign in again.");
       }
     } catch (error) {
-      console.error('Profile fetch error:', error);
-      toast.error('Failed to fetch profile');
+      console.error("Profile fetch error:", error);
+      toast.error("Failed to fetch profile");
     } finally {
       setLoading(false);
     }
@@ -96,11 +96,13 @@ const EntrepreneurProfilePage = () => {
     fetchProfile();
   }, [fetchProfile]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
     const { name, value } = e.target;
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -117,62 +119,70 @@ const EntrepreneurProfilePage = () => {
     e.preventDefault();
     try {
       const response = await fetch(API_ROUTES.PROFILE.UPDATE, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify(profile)
+        body: JSON.stringify(profile),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        toast.success('Profile updated successfully');
+        toast.success("Profile updated successfully");
         setIsEditing(false);
       } else if (data.isExpired) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        router.push('/auth/signin');
-        toast.error('Session expired. Please sign in again.');
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        router.push("/auth/signin");
+        toast.error("Session expired. Please sign in again.");
       } else {
-        throw new Error(data.message || 'Failed to update profile');
+        throw new Error(data.message || "Failed to update profile");
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       toast.error(`Failed to update profile: ${errorMessage}`);
     }
   };
 
   const handleAddSocialMedia = () => {
     const availablePlatforms = SOCIAL_MEDIA_PLATFORMS.filter(
-      platform => !profile.socialMedia.some(sm => sm.platform === platform)
+      (platform) => !profile.socialMedia.some((sm) => sm.platform === platform)
     );
 
     if (availablePlatforms.length === 0) {
-      toast.error('All social media platforms have been added');
+      toast.error("All social media platforms have been added");
       return;
     }
 
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      socialMedia: [...prev.socialMedia, { platform: availablePlatforms[0], url: '' }]
+      socialMedia: [
+        ...prev.socialMedia,
+        { platform: availablePlatforms[0], url: "" },
+      ],
     }));
   };
 
   const handleRemoveSocialMedia = (index: number) => {
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      socialMedia: prev.socialMedia.filter((_, i) => i !== index)
+      socialMedia: prev.socialMedia.filter((_, i) => i !== index),
     }));
   };
 
-  const handleSocialMediaChange = (index: number, field: 'platform' | 'url', value: string) => {
-    setProfile(prev => ({
+  const handleSocialMediaChange = (
+    index: number,
+    field: "platform" | "url",
+    value: string
+  ) => {
+    setProfile((prev) => ({
       ...prev,
-      socialMedia: prev.socialMedia.map((sm, i) => 
+      socialMedia: prev.socialMedia.map((sm, i) =>
         i === index ? { ...sm, [field]: value } : sm
-      )
+      ),
     }));
   };
 
@@ -181,36 +191,52 @@ const EntrepreneurProfilePage = () => {
     e.stopPropagation(); // Add this to prevent form propagation
     if (!newSkill.trim()) return;
 
-    if (profile.skills.some(skill => skill.name.toLowerCase() === newSkill.toLowerCase())) {
-      toast.error('Skill already exists');
+    if (
+      profile.skills.some(
+        (skill) => skill.name.toLowerCase() === newSkill.toLowerCase()
+      )
+    ) {
+      toast.error("Skill already exists");
       return;
     }
 
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      skills: [...prev.skills, { name: newSkill.trim() }]
+      skills: [...prev.skills, { name: newSkill.trim() }],
     }));
-    setNewSkill('');
+    setNewSkill("");
   };
 
   const handleRemoveSkill = (skillToRemove: string) => {
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      skills: prev.skills.filter(skill => skill.name !== skillToRemove)
+      skills: prev.skills.filter((skill) => skill.name !== skillToRemove),
     }));
   };
 
-  const ProfilePictureUpload = ({ isEditing, onUpload }: { isEditing: boolean, onUpload: (file: File) => void }) => {
+  const ProfilePictureUpload = ({
+    isEditing,
+    onUpload,
+  }: {
+    isEditing: boolean;
+    onUpload: (file: File) => void;
+  }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
-    const [croppedAreaPixels, setCroppedAreaPixels] = useState<CropArea | null>(null);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<CropArea | null>(
+      null
+    );
     const [showCropModal, setShowCropModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     useEffect(() => {
-      setPreviewUrl(profile.profilePicture ? `${profile.profilePicture}?${Date.now()}` : '/default-profile.png');
+      setPreviewUrl(
+        profile.profilePicture
+          ? `${profile.profilePicture}?${Date.now()}`
+          : "/default-profile.png"
+      );
     }, [profile.profilePicture]);
 
     interface CropArea {
@@ -220,9 +246,12 @@ const EntrepreneurProfilePage = () => {
       height: number;
     }
 
-    const onCropComplete = useCallback((croppedArea: CropArea, croppedAreaPixels: CropArea) => {
-      setCroppedAreaPixels(croppedAreaPixels);
-    }, []);
+    const onCropComplete = useCallback(
+      (croppedArea: CropArea, croppedAreaPixels: CropArea) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+      },
+      []
+    );
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -234,8 +263,8 @@ const EntrepreneurProfilePage = () => {
         setPreviewUrl(imageDataUrl);
         setShowCropModal(true);
       } catch (error: unknown) {
-        console.error('Error processing image:', error);
-        toast.error('Failed to process image');
+        console.error("Error processing image:", error);
+        toast.error("Failed to process image");
       }
     };
 
@@ -247,22 +276,22 @@ const EntrepreneurProfilePage = () => {
         if (!previewUrl) return;
         const croppedImage = await cropImage(previewUrl, croppedAreaPixels);
         const file = new File([croppedImage], selectedFile.name, {
-          type: selectedFile.type
+          type: selectedFile.type,
         });
-        
+
         const azureUrl = await onUpload(file);
-        
+
         setPreviewUrl(`${azureUrl}?${Date.now()}`);
-        
-        setProfile(prev => ({
+
+        setProfile((prev) => ({
           ...prev,
-          profilePicture: azureUrl
+          profilePicture: azureUrl,
         }));
-        
+
         setShowCropModal(false);
       } catch (error: unknown) {
-        console.error('Error cropping/uploading image:', error);
-        toast.error('Failed to crop and upload image');
+        console.error("Error cropping/uploading image:", error);
+        toast.error("Failed to crop and upload image");
       } finally {
         setIsUploading(false);
       }
@@ -272,7 +301,7 @@ const EntrepreneurProfilePage = () => {
       <div className="flex flex-col items-center gap-4">
         <div className="relative w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white">
           <Image
-            src={previewUrl || '/default-profile.png'}
+            src={previewUrl || "/default-profile.png"}
             alt="Profile"
             width={160}
             height={160}
@@ -290,7 +319,7 @@ const EntrepreneurProfilePage = () => {
               {isUploading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white" />
               ) : (
-                'Change Photo'
+                "Change Photo"
               )}
             </label>
             <input
@@ -309,7 +338,7 @@ const EntrepreneurProfilePage = () => {
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
               <div className="relative w-full h-96">
                 <Cropper
-                  image={previewUrl || ''}
+                  image={previewUrl || ""}
                   crop={crop}
                   zoom={zoom}
                   aspect={1}
@@ -357,24 +386,31 @@ const EntrepreneurProfilePage = () => {
           <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 text-white py-12 px-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-6">
-                <ProfilePictureUpload 
+                <ProfilePictureUpload
                   isEditing={isEditing}
                   onUpload={async (file) => {
                     const formData = new FormData();
-                    formData.append('file', file);
-                    const response = await fetch(API_ROUTES.PROFILE.UPLOAD_PROFILE_PICTURE, {
-                      method: 'POST',
-                      headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                      },
-                      body: formData
-                    });
+                    formData.append("file", file);
+                    const response = await fetch(
+                      API_ROUTES.PROFILE.UPLOAD_PROFILE_PICTURE,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                          )}`,
+                        },
+                        body: formData,
+                      }
+                    );
                     const data = await response.json();
                     if (response.ok) {
-                      toast.success('Profile picture uploaded');
+                      toast.success("Profile picture uploaded");
                       return data.profilePicture;
                     } else {
-                      throw new Error(data.message || 'Failed to upload profile picture');
+                      throw new Error(
+                        data.message || "Failed to upload profile picture"
+                      );
                     }
                   }}
                 />
@@ -411,7 +447,9 @@ const EntrepreneurProfilePage = () => {
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Full Name
+                      </label>
                       <input
                         type="text"
                         name="fullName"
@@ -426,7 +464,9 @@ const EntrepreneurProfilePage = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">Email</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Email
+                      </label>
                       <input
                         type="email"
                         name="email"
@@ -441,7 +481,9 @@ const EntrepreneurProfilePage = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">Phone</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Phone
+                      </label>
                       <input
                         type="tel"
                         name="phone"
@@ -456,7 +498,9 @@ const EntrepreneurProfilePage = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">Location</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Location
+                      </label>
                       <input
                         type="text"
                         name="location"
@@ -471,7 +515,9 @@ const EntrepreneurProfilePage = () => {
                     </div>
 
                     <div className="md:col-span-2 space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">Bio</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Bio
+                      </label>
                       <textarea
                         name="bio"
                         value={profile.bio}
@@ -497,22 +543,29 @@ const EntrepreneurProfilePage = () => {
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    {profile.socialMedia.map((social, index) => (
+                    {(profile.socialMedia || []).map((social, index) => (
                       <div key={index} className="flex items-center gap-4">
                         <select
                           value={social.platform}
-                          onChange={(e) => handleSocialMediaChange(index, 'platform', e.target.value)}
+                          onChange={(e) =>
+                            handleSocialMediaChange(
+                              index,
+                              "platform",
+                              e.target.value
+                            )
+                          }
                           disabled={!isEditing}
                           className="w-1/4 rounded-md border border-gray-300 px-4 py-2 
                             text-gray-900 bg-white focus:border-indigo-500 focus:ring-indigo-500
                             disabled:bg-gray-100 disabled:text-gray-500"
                         >
-                          {SOCIAL_MEDIA_PLATFORMS.map(platform => (
-                            <option 
-                              key={platform} 
+                          {SOCIAL_MEDIA_PLATFORMS.map((platform) => (
+                            <option
+                              key={platform}
                               value={platform}
                               disabled={profile.socialMedia.some(
-                                (sm, i) => sm.platform === platform && i !== index
+                                (sm, i) =>
+                                  sm.platform === platform && i !== index
                               )}
                             >
                               {platform}
@@ -522,9 +575,19 @@ const EntrepreneurProfilePage = () => {
                         <input
                           type="url"
                           value={social.url}
-                          onChange={(e) => handleSocialMediaChange(index, 'url', e.target.value)}
+                          onChange={(e) =>
+                            handleSocialMediaChange(
+                              index,
+                              "url",
+                              e.target.value
+                            )
+                          }
                           disabled={!isEditing}
-                          placeholder={PLATFORM_PLACEHOLDERS[social.platform as keyof typeof PLATFORM_PLACEHOLDERS]}
+                          placeholder={
+                            PLATFORM_PLACEHOLDERS[
+                              social.platform as keyof typeof PLATFORM_PLACEHOLDERS
+                            ]
+                          }
                           className="flex-1 rounded-md border border-gray-300 px-4 py-2 
                             text-gray-900 bg-white focus:border-indigo-500 focus:ring-indigo-500
                             disabled:bg-gray-100 disabled:text-gray-500"
@@ -547,7 +610,10 @@ const EntrepreneurProfilePage = () => {
                         className="mt-4 w-full border-2 border-dashed border-gray-300 
                           bg-gray-50 hover:bg-gray-100 text-gray-800 hover:text-gray-900
                           hover:border-gray-400 transition-all duration-200"
-                        disabled={profile.socialMedia.length >= SOCIAL_MEDIA_PLATFORMS.length}
+                        disabled={
+                          (profile.socialMedia?.length || 0) >=
+                          SOCIAL_MEDIA_PLATFORMS.length
+                        }
                       >
                         <PlusIcon className="h-5 w-5 mr-2" />
                         Add Social Media Profile
@@ -567,7 +633,7 @@ const EntrepreneurProfilePage = () => {
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     <div className="flex flex-wrap gap-2">
-                      {profile.skills.map((skill, index) => (
+                      {(profile.skills || []).map((skill, index) => (
                         <div
                           key={index}
                           className="inline-flex items-center gap-2 px-3 py-1 
@@ -587,7 +653,9 @@ const EntrepreneurProfilePage = () => {
                       ))}
                     </div>
                     {isEditing && (
-                      <div className="flex gap-2"> {/* Changed from form to div */}
+                      <div className="flex gap-2">
+                        {" "}
+                        {/* Changed from form to div */}
                         <input
                           type="text"
                           value={newSkill}

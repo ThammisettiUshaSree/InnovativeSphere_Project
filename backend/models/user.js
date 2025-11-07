@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 /**
  * User Schema
@@ -13,51 +13,50 @@ const bcrypt = require('bcryptjs');
 const UserSchema = new mongoose.Schema({
   fullName: {
     type: String,
-    required: [true, 'Please provide a full name'],
+    required: [true, "Please provide a full name"],
     trim: true,
-    maxLength: [50, 'Name cannot be more than 50 characters']
+    maxLength: [50, "Name cannot be more than 50 characters"],
   },
   email: {
     type: String,
-    required: [true, 'Please provide an email'],
-    unique: true,
+    required: [true, "Please provide an email"],
+    unique: true, // This already creates a unique index
     trim: true,
     lowercase: true,
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      'Please provide a valid email address'
-    ]
+      "Please provide a valid email address",
+    ],
   },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
-    minlength: [8, 'Password must be at least 8 characters'],
-    select: false // Don't return password in queries by default
+    required: [true, "Please provide a password"],
+    minlength: [8, "Password must be at least 8 characters"],
+    select: false, // Don't return password in queries by default
   },
   accountType: {
     type: String,
     enum: {
-      values: ['entrepreneur', 'investor'],
-      message: '{VALUE} is not a valid account type'
+      values: ["entrepreneur", "investor"],
+      message: "{VALUE} is not a valid account type",
     },
-    default: 'entrepreneur'
+    default: "entrepreneur",
   },
   createdAt: {
     type: Date,
     default: Date.now,
-    immutable: true // Prevent modification of creation date
+    immutable: true, // Prevent modification of creation date
   },
   lastLogin: {
-    type: Date
+    type: Date,
   },
   active: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 });
 
-// Index for better query performance
-UserSchema.index({ email: 1 });
+// Keep this index if you want it; no duplication here
 UserSchema.index({ accountType: 1 });
 
 /**
@@ -65,7 +64,7 @@ UserSchema.index({ accountType: 1 });
  * @param {string} enteredPassword - The password to compare
  * @returns {Promise<boolean>} - True if password matches
  */
-UserSchema.methods.matchPassword = async function(enteredPassword) {
+UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
@@ -73,9 +72,9 @@ UserSchema.methods.matchPassword = async function(enteredPassword) {
  * Hash password before saving
  * @returns {void}
  */
-UserSchema.pre('save', async function(next) {
+UserSchema.pre("save", async function (next) {
   // Only hash password if it has been modified
-  if (!this.isModified('password')) {
+  if (!this.isModified("password")) {
     return next();
   }
 
@@ -93,7 +92,7 @@ UserSchema.pre('save', async function(next) {
  * Update lastLogin date
  * @returns {void}
  */
-UserSchema.methods.updateLastLogin = async function() {
+UserSchema.methods.updateLastLogin = async function () {
   this.lastLogin = new Date();
   return this.save();
 };
@@ -102,11 +101,11 @@ UserSchema.methods.updateLastLogin = async function() {
  * Get public profile (removes sensitive data)
  * @returns {Object} Public user data
  */
-UserSchema.methods.getPublicProfile = function() {
+UserSchema.methods.getPublicProfile = function () {
   const userObject = this.toObject();
   delete userObject.password;
   delete userObject.__v;
   return userObject;
 };
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model("User", UserSchema);

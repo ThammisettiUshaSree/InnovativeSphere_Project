@@ -577,7 +577,7 @@ const InvestorProfilePage = () => {
                             <input
                               type="number"
                               name="investmentRange.min"
-                              value={profile.investmentRange.min}
+                              value={profile?.investmentRange?.min ?? ""}
                               onChange={handleChange}
                               disabled={!isEditing}
                               placeholder="Min Amount"
@@ -590,7 +590,7 @@ const InvestorProfilePage = () => {
                             <input
                               type="number"
                               name="investmentRange.max"
-                              value={profile.investmentRange.max}
+                              value={profile?.investmentRange?.max ?? ""}
                               onChange={handleChange}
                               disabled={!isEditing}
                               placeholder="Max Amount"
@@ -615,7 +615,7 @@ const InvestorProfilePage = () => {
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    {profile.socialMedia.map((social, index) => (
+                    {profile?.socialMedia?.map((social, index) => (
                       <div key={index} className="flex items-center gap-4">
                         <select
                           value={social.platform}
@@ -665,7 +665,7 @@ const InvestorProfilePage = () => {
                         className="mt-4 w-full border-2 border-dashed border-gray-300 
                           bg-gray-50 hover:bg-gray-100 text-gray-800 hover:text-gray-900
                           hover:border-gray-400 transition-all duration-200"
-                        disabled={profile.socialMedia.length >= SOCIAL_MEDIA_PLATFORMS.length}
+                        disabled={profile?.socialMedia?.length >= SOCIAL_MEDIA_PLATFORMS.length}
                       >
                         <PlusIcon className="h-5 w-5 mr-2" />
                         Add Social Media Profile
@@ -685,7 +685,7 @@ const InvestorProfilePage = () => {
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     <div className="flex flex-wrap gap-2">
-                      {profile.skills.map((skill, index) => (
+                      {profile?.skills?.map((skill, index) => (
                         <div
                           key={index}
                           className="inline-flex items-center gap-2 px-3 py-1 

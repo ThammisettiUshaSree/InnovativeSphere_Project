@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { uploadStartupLogo } = require('../../controllers/entrepreneur/startupLogoController');
 const auth = require('../../middleware/auth');
-const upload = require('../../config/multer');
+const { upload } = require('../../config/multer');
 
 /**
  * Startup Logo Routes
@@ -18,7 +18,7 @@ const upload = require('../../config/multer');
  */
 router.post('/upload-startup-logo', 
   auth, 
-  upload.single('file'),
+  upload.single('logo'),
   (req, res, next) => {
     // File existence check
     if (!req.file) {

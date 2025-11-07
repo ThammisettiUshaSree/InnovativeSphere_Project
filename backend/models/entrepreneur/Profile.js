@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 /**
  * Social Media Platform Schema
@@ -9,22 +9,29 @@ const mongoose = require('mongoose');
 const socialMediaSchema = new mongoose.Schema({
   platform: {
     type: String,
-    required: [true, 'Platform name is required'],
+    required: [true, "Platform name is required"],
     enum: {
-      values: ['LinkedIn', 'Twitter', 'Instagram', 'GitHub', 'Facebook', 'YouTube'],
-      message: '{VALUE} is not a supported platform'
-    }
+      values: [
+        "LinkedIn",
+        "Twitter",
+        "Instagram",
+        "GitHub",
+        "Facebook",
+        "YouTube",
+      ],
+      message: "{VALUE} is not a supported platform",
+    },
   },
   url: {
     type: String,
-    required: [true, 'URL is required'],
+    required: [true, "URL is required"],
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return /^https?:\/\/.+/.test(v);
       },
-      message: 'Please enter a valid URL starting with http:// or https://'
-    }
-  }
+      message: "Please enter a valid URL starting with http:// or https://",
+    },
+  },
 });
 
 /**
@@ -35,100 +42,111 @@ const socialMediaSchema = new mongoose.Schema({
 const skillSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Skill name is required'],
-    trim: true
-  }
+    required: [true, "Skill name is required"],
+    trim: true,
+  },
 });
 
 /**
  * Entrepreneur Profile Schema
  * @typedef {Object} EntrepreneurProfile
  */
-const profileSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'User ID is required'],
-    unique: true,
-    immutable: true
-  },
-  fullName: {
-    type: String,
-    required: [true, 'Full name is required'],
-    trim: true,
-    maxLength: [50, 'Name cannot be more than 50 characters']
-  },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    trim: true,
-    lowercase: true,
-    match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      'Please provide a valid email address'
-    ]
-  },
-  phone: {
-    type: String,
-    validate: {
-      validator: function(v) {
-        return !v || /^\+?[\d\s-]+$/.test(v);
+const profileSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "User ID is required"],
+      unique: true, // Unique index created automatically here
+      immutable: true,
+    },
+    fullName: {
+      type: String,
+      required: [true, "Full name is required"],
+      trim: true,
+      maxLength: [50, "Name cannot be more than 50 characters"],
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      trim: true,
+      lowercase: true,
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        "Please provide a valid email address",
+      ],
+    },
+    phone: {
+      type: String,
+      validate: {
+        validator: function (v) {
+          return !v || /^\+?[\d\s-]+$/.test(v);
+        },
+        message: "Please provide a valid phone number",
       },
-      message: 'Please provide a valid phone number'
-    }
-  },
-  location: {
-    type: String,
-    trim: true
-  },
-  bio: {
-    type: String,
-    trim: true,
-    maxLength: [1000, 'Bio cannot be more than 1000 characters']
-  },
-  profilePicture: {
-    type: String,
-    default: '',
-    validate: {
-      validator: function(v) {
-        return !v || /^https?:\/\/.+/.test(v);
+    },
+    location: {
+      type: String,
+      trim: true,
+    },
+    bio: {
+      type: String,
+      trim: true,
+      maxLength: [1000, "Bio cannot be more than 1000 characters"],
+    },
+    profilePicture: {
+      type: String,
+      default: "",
+      validate: {
+        validator: function (v) {
+          return !v || /^https?:\/\/.+/.test(v);
+        },
+        message: "Profile picture URL must start with http:// or https://",
       },
-      message: 'Profile picture URL must start with http:// or https://'
-    }
+    },
+    socialMedia: [socialMediaSchema],
+    skills: [skillSchema],
+    expertise: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    achievements: [
+      {
+        type: String,
+        trim: true,
+        maxLength: [
+          200,
+          "Achievement description cannot exceed 200 characters",
+        ],
+      },
+    ],
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      immutable: true,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  socialMedia: [socialMediaSchema],
-  skills: [skillSchema],
-  expertise: [{
-    type: String,
-    trim: true
-  }],
-  achievements: [{
-    type: String,
-    trim: true,
-    maxLength: [200, 'Achievement description cannot exceed 200 characters']
-  }],
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    immutable: true
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
+  {
+    timestamps: true,
   }
-}, {
-  timestamps: true
-});
+);
 
-// Indexes for better query performance
-profileSchema.index({ userId: 1 });
+// Removed duplicate index on userId to prevent warnings
+// profileSchema.index({ userId: 1 }); // <-- removed
+
 profileSchema.index({ email: 1 });
 profileSchema.index({ skills: 1 });
 
 /**
- * Update timestamps before saving
+ * Update updatedAt timestamp before saving
  */
-profileSchema.pre('save', function(next) {
+profileSchema.pre("save", function (next) {
   this.updatedAt = new Date();
   next();
 });
@@ -137,7 +155,7 @@ profileSchema.pre('save', function(next) {
  * Get public profile (removes sensitive data)
  * @returns {Object} Public profile data
  */
-profileSchema.methods.getPublicProfile = function() {
+profileSchema.methods.getPublicProfile = function () {
   const profile = this.toObject();
   delete profile.__v;
   delete profile.email; // Hide email in public profile
@@ -146,14 +164,14 @@ profileSchema.methods.getPublicProfile = function() {
 };
 
 /**
- * Validate skill uniqueness in array
+ * Validate that skills array contains unique skill names
  */
-profileSchema.path('skills').validate(function(skills) {
+profileSchema.path("skills").validate(function (skills) {
   if (!skills) return true;
-  const uniqueSkills = new Set(skills.map(s => s.name.toLowerCase()));
+  const uniqueSkills = new Set(skills.map((s) => s.name.toLowerCase()));
   return uniqueSkills.size === skills.length;
-}, 'Duplicate skills are not allowed');
+}, "Duplicate skills are not allowed");
 
-const Profile = mongoose.model('Profile', profileSchema);
+const Profile = mongoose.model("Profile", profileSchema);
 
 module.exports = Profile;

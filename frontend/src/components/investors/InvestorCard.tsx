@@ -1,9 +1,9 @@
-import React from 'react';
-import Image from 'next/image';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-import { ExternalLinkIcon } from '@radix-ui/react-icons';
+import React from "react";
+import Image from "next/image";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { ExternalLinkIcon } from "@radix-ui/react-icons";
 
 interface InvestorCardProps {
   investor?: {
@@ -23,7 +23,7 @@ interface InvestorCardProps {
 
 const InvestorCard = ({ investor }: InvestorCardProps) => {
   const router = useRouter();
-  
+
   if (!investor) {
     return null;
   }
@@ -38,7 +38,7 @@ const InvestorCard = ({ investor }: InvestorCardProps) => {
         <div className="flex items-start space-x-4">
           <div className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
             <Image
-              src={investor.profilePicture || '/default-profile.png'}
+              src={investor.profilePicture || "/default-profile.png"}
               alt={investor.fullName}
               fill
               className="object-cover"
@@ -61,14 +61,20 @@ const InvestorCard = ({ investor }: InvestorCardProps) => {
             </div>
           </div>
         </div>
-        <p className="mt-4 text-sm text-gray-600 line-clamp-2">{investor.bio}</p>
+        <p className="mt-4 text-sm text-gray-600 line-clamp-2">
+          {investor.bio}
+        </p>
         <div className="mt-4 flex items-center justify-between text-sm">
-          <span className="text-gray-600">Portfolio: {investor.portfolioSize}</span>
           <span className="text-gray-600">
-            ${investor.investmentRange.min.toLocaleString()} - ${investor.investmentRange.max.toLocaleString()}
+            Portfolio: {investor.portfolioSize}
+          </span>
+          <span className="text-gray-600">
+            {investor.investmentRange
+              ? `$${investor.investmentRange.min?.toLocaleString()} - $${investor.investmentRange.max?.toLocaleString()}`
+              : "Investment range not specified"}
           </span>
         </div>
-        
+
         {/* View Details Button */}
         <Button
           onClick={handleViewDetails}
