@@ -18,14 +18,10 @@ import {
 import { toast } from "react-hot-toast";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
-/**
- * Navigation item structure
- */
 interface NavItem {
   path: string;
   icon: React.ReactNode;
   text: string;
-  ariaLabel?: string;
 }
 
 export default function InvestorSidebarPage() {
@@ -38,118 +34,72 @@ export default function InvestorSidebarPage() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => setIsMounted(true), []);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
 
-  useEffect(() => {
-    if (isMobileOpen) setIsMobileOpen(false);
-  }, [pathname, isMobileOpen]);
+  const toggleMobileSidebar = useCallback(
+    () => setIsMobileOpen((p) => !p),
+    []
+  );
 
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isMobileOpen) {
-        setIsMobileOpen(false);
-      }
-    };
-    document.addEventListener("keydown", handleEscKey);
-    return () => document.removeEventListener("keydown", handleEscKey);
-  }, [isMobileOpen]);
+  const toggleCollapse = useCallback(
+    () => setIsCollapsed((p: boolean) => !p),
+    [setIsCollapsed]
+  );
 
-  const toggleMobileSidebar = useCallback(() => {
-    setIsMobileOpen((prev) => !prev);
-  }, []);
+  const handleLogout = () => {
+    if (!confirm("Are you sure you want to log out?")) return;
+    localStorage.clear();
+    sessionStorage.clear();
+    toast.success("Logged out");
+    router.push("/auth/signin");
+  };
 
-  const toggleCollapse = useCallback(() => {
-    setIsCollapsed((prev) => !prev);
-  }, [setIsCollapsed]);
-
-  const handleLogout = useCallback(() => {
-    if (window.confirm("Are you sure you want to log out?")) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      sessionStorage.clear();
-      toast.success("Logged out successfully");
-      router.push("/auth/signin");
-    }
-  }, [router]);
-
-  if (!isMounted) return null;
-
-  const linkClass = (path: string) => `
-    flex items-center p-3 rounded-lg transition-all duration-200
-    ${
+  const linkClass = (path: string) =>
+    `flex items-center p-3 rounded-lg transition ${
       pathname === path
-        ? "bg-blue-600 text-white font-medium"
-        : "hover:bg-gray-100 text-gray-700"
-    }
-    ${isCollapsed ? "justify-center" : "justify-start"}
-  `;
+        ? "bg-blue-600 text-white"
+        : "text-gray-700 hover:bg-gray-100"
+    } ${isCollapsed ? "justify-center" : "justify-start"}`;
 
   const navItems: NavItem[] = [
-    {
-      path: "/investor/home",
-      icon: <HomeIcon className="w-5 h-5" />,
-      text: "Home",
-    },
-    {
-      path: "/investor/startups",
-      icon: <RocketIcon className="w-5 h-5" />,
-      text: "Startups",
-    },
-    {
-      path: "/investor/profile",
-      icon: <IdCardIcon className="w-5 h-5" />,
-      text: "Profile",
-    },
-    {
-      path: "/investor/settings",
-      icon: <GearIcon className="w-5 h-5" />,
-      text: "Settings",
-    },
+    { path: "/investor/home", icon: <HomeIcon />, text: "Home" },
+    { path: "/investor/startups", icon: <RocketIcon />, text: "Startups" },
+    { path: "/investor/profile", icon: <IdCardIcon />, text: "Profile" },
+    { path: "/investor/settings", icon: <GearIcon />, text: "Settings" },
   ];
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 lg:hidden z-40"
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
           onClick={toggleMobileSidebar}
         />
       )}
 
       <aside
-        className={`fixed top-0 left-0 h-full flex flex-col ${
+        className={`fixed top-0 left-0 z-50 h-full bg-white border-r shadow transition-all ${
           isCollapsed ? "w-20" : "w-72"
-        } bg-white border-r shadow-lg transition-all duration-300 ${
-          isMobileOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 z-50`}
+        } ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
-        <div className="h-16 border-b flex items-center justify-between px-4">
+        <div className="h-16 flex items-center justify-between px-4 border-b">
           <Link href="/investor/home" className="flex items-center gap-3">
             <Image src="/logo3.jpg" alt="" width={36} height={36} />
-            {!isCollapsed && (
-              <span className="font-bold text-lg">InnovativeSphere</span>
-            )}
+            {!isCollapsed && <span className="font-bold">InnovativeSphere</span>}
           </Link>
 
-          <button
-            onClick={toggleCollapse}
-            className="hidden lg:block"
-            aria-label="Toggle sidebar"
-          >
+          <button onClick={toggleCollapse} className="hidden lg:block">
             {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </button>
 
-          <button
-            onClick={toggleMobileSidebar}
-            className="lg:hidden"
-            aria-label="Close sidebar"
-          >
+          <button onClick={toggleMobileSidebar} className="lg:hidden">
             <Cross1Icon />
           </button>
         </div>
 
-        <nav className="flex-1 p-3 space-y-2">
+        <nav className="p-3 space-y-2">
           {navItems.map((item) => (
             <Link
               key={item.path}
@@ -162,10 +112,10 @@ export default function InvestorSidebarPage() {
           ))}
         </nav>
 
-        <div className="p-3 border-t">
+        <div className="p-3 border-t mt-auto">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 bg-red-500 text-white p-3 rounded-lg hover:bg-red-600"
+            className="w-full flex items-center justify-center gap-2 bg-red-500 text-white p-3 rounded hover:bg-red-600"
           >
             <ExitIcon />
             {!isCollapsed && "Logout"}
@@ -175,22 +125,19 @@ export default function InvestorSidebarPage() {
 
       <button
         onClick={toggleMobileSidebar}
-        className="fixed top-4 left-4 p-3 bg-white rounded-lg shadow lg:hidden z-50"
+        className="fixed top-4 left-4 z-50 p-3 bg-white shadow rounded lg:hidden"
       >
         <HamburgerMenuIcon />
       </button>
 
-      {/* STATIC PAGE CONTENT (required for page.tsx) */}
       <main
-        className={`flex-1 p-8 transition-all duration-300 ${
+        className={`flex-1 p-8 transition-all ${
           isCollapsed ? "lg:pl-20" : "lg:pl-72"
         }`}
       >
-        <h1 className="text-2xl font-bold text-gray-800">
-          Investor Dashboard
-        </h1>
+        <h1 className="text-2xl font-bold">Investor Dashboard</h1>
         <p className="mt-2 text-gray-600">
-          Use the sidebar to explore startups and manage investments.
+          Use the sidebar to navigate.
         </p>
       </main>
     </div>
