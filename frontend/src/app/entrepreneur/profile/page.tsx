@@ -219,7 +219,9 @@ const EntrepreneurProfilePage = () => {
     onUpload,
   }: {
     isEditing: boolean;
-    onUpload: (file: File) => void;
+    // onUpload: (file: File) => void;
+    onUpload: (file: File) => Promise<string>;
+
   }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);

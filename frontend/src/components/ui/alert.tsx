@@ -1,32 +1,55 @@
-import React from "react";
+import * as React from "react"
+import { cn } from "@/lib/utils"
 
-interface AlertProps {
-  variant?: "info" | "error" | "success";
-  title: string;
-  description: string;
+type AlertVariant = "default" | "destructive"
+
+interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: AlertVariant
 }
 
-export function Alert({ variant = "info", title, description }: AlertProps) {
-  let bgColor = "bg-blue-100 text-blue-800";
+export function Alert({
+  variant = "default",
+  className,
+  children,
+  ...props
+}: AlertProps) {
+  const base =
+    "relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg~*]:pl-7"
 
-  if (variant === "error") {
-    bgColor = "bg-red-100 text-red-800";
-  } else if (variant === "success") {
-    bgColor = "bg-green-100 text-green-800";
+  const variants = {
+    default: "bg-background text-foreground",
+    destructive: "border-red-300 bg-red-50 text-red-800",
   }
 
   return (
-    <div className={`p-4 rounded-md ${bgColor}`} role="alert">
-      <strong className="block font-semibold">{title}</strong>
-      <p>{description}</p>
+    <div
+      role="alert"
+      className={cn(base, variants[variant], className)}
+      {...props}
+    >
+      {children}
     </div>
-  );
+  )
 }
 
-export function AlertTitle({ children }: { children: React.ReactNode }) {
-  return <div className="font-bold mb-1">{children}</div>;
+export function AlertTitle({
+  children,
+  className,
+}: React.HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h5 className={cn("mb-1 font-medium leading-none", className)}>
+      {children}
+    </h5>
+  )
 }
 
-export function AlertDescription({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;
+export function AlertDescription({
+  children,
+  className,
+}: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <div className={cn("text-sm [&_p]:leading-relaxed", className)}>
+      {children}
+    </div>
+  )
 }

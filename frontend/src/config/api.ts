@@ -22,7 +22,8 @@ export const API_ROUTES = {
     UPDATE_PASSWORD: `${API_BASE_URL}/auth/password/update`,
     VERIFY_EMAIL: `${API_BASE_URL}/auth/verify-email`,
     FORGOT_PASSWORD: `${API_BASE_URL}/auth/password/forgot`,
-    RESET_PASSWORD: `${API_BASE_URL}/auth/password/reset`
+    RESET_PASSWORD: `${API_BASE_URL}/auth/password/reset`,
+     DELETE_ACCOUNT: `${API_BASE_URL}/auth/delete`
   },
   
   PROFILE: {
@@ -49,6 +50,9 @@ export const API_ROUTES = {
   },
   
   INVESTOR: {
+    DASHBOARD: {
+      GET_STATS: "/api/investor/dashboard/stats",
+    },
     STARTUPS: {
       GET_ALL: `${API_BASE_URL}/investor/startups/all`,
       GET_BY_ID: (id: string) => `${API_BASE_URL}/investor/startups/${id}`,

@@ -98,7 +98,11 @@ const StartupDetailsPage = () => {
   }
 
   // Calculate funding progress percentage
-  const progress = startup.fundingGoal ? (startup.raisedSoFar / startup.fundingGoal) * 100 : 0;
+  const progress =
+  startup.fundingGoal && startup.raisedSoFar !== undefined
+    ? (startup.raisedSoFar / startup.fundingGoal) * 100
+    : 0;
+
 
   return (
     <EntrepreneurSidebar>

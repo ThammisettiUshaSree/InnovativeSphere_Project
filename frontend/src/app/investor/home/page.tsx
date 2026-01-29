@@ -401,13 +401,19 @@ const InvestorHomePage = () => {
                         className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                         tabIndex={0}
                         role="button"
-                        onClick={() => handleViewStartup(startup._id)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            handleViewStartup(startup._id);
-                          }
-                        }}
+                        onClick={() => {
+  if (startup._id) {
+    handleViewStartup(startup._id);
+  }
+}}
+
+                       onKeyDown={(e) => {
+  if ((e.key === "Enter" || e.key === " ") && startup._id) {
+    e.preventDefault();
+    handleViewStartup(startup._id);
+  }
+}}
+
                         aria-label={`View details for ${startup.startupName}`}
                       >
                         <div className="flex items-center space-x-4">

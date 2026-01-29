@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import InvestorSidebar from '@/app/sidebar/investor/page';
 import { API_ROUTES } from '@/config/api';
-import { Startup, StartupResponse } from '@/types/startup';
+import { Startup } from '@/types/startup';
 import { toast } from 'react-hot-toast';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -101,7 +101,7 @@ const InvestorStartupsPage = () => {
         throw new Error(errorData.message || `HTTP error ${response.status}`);
       }
 
-      const raw: StartupResponse = await response.json();
+      const raw = await response.json();
       setStartups(raw.data.startups);
       setTotalPages(raw.data.pagination.pages);
       setTotalStartups(raw.data.pagination.total);

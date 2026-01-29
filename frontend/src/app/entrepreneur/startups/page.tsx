@@ -245,13 +245,14 @@ const StartupsPage = () => {
                       <div className="space-y-1">
                         <p className="text-sm font-medium text-gray-500">Funding Goal</p>
                         <p className="text-lg font-semibold text-gray-900">
-                          ${startup.fundingGoal.toLocaleString()}
+                          ${startup.fundingGoal?.toLocaleString() ?? "0"}
+
                         </p>
                       </div>
                       <div className="space-y-1 text-right">
                         <p className="text-sm font-medium text-gray-500">Raised</p>
                         <p className="text-lg font-semibold text-green-600">
-                          ${startup.raisedSoFar.toLocaleString()}
+                          ${startup.raisedSoFar?.toLocaleString() ?? "0"}
                         </p>
                       </div>
                     </div>
@@ -262,13 +263,13 @@ const StartupsPage = () => {
                       role="progressbar"
                       aria-valuemin={0}
                       aria-valuemax={100}
-                      aria-valuenow={calculateFundingProgress(startup.raisedSoFar, startup.fundingGoal)}
-                      aria-label={`Funding progress: ${calculateFundingProgress(startup.raisedSoFar, startup.fundingGoal).toFixed(0)}%`}
+                      aria-valuenow={calculateFundingProgress(startup.raisedSoFar ?? 0, startup.fundingGoal ?? 0)}
+                      aria-label={`Funding progress: ${calculateFundingProgress(startup.raisedSoFar ?? 0, startup.fundingGoal ?? 0).toFixed(0)}%`}
                     >
                       <div 
                         className="bg-green-600 h-2 rounded-full transition-all duration-300"
                         style={{ 
-                          width: `${calculateFundingProgress(startup.raisedSoFar, startup.fundingGoal)}%` 
+                          width: `${calculateFundingProgress(startup.raisedSoFar ?? 0, startup.fundingGoal ?? 0)}%` 
                         }}
                       />
                     </div>

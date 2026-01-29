@@ -28,7 +28,7 @@ interface SidebarProps {
  */
 interface NavItem {
   path: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   text: string;
   ariaLabel?: string;
 }
