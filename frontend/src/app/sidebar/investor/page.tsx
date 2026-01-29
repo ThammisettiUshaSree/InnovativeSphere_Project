@@ -9,9 +9,9 @@ import {
   ChevronLeftIcon,
   HomeIcon,
   RocketIcon,
-  PersonIcon,
   GearIcon,
   ExitIcon,
+  IdCardIcon,
   HamburgerMenuIcon,
   Cross1Icon,
 } from "@radix-ui/react-icons";
@@ -39,9 +39,7 @@ export default function InvestorSidebarPage() {
   const pathname = usePathname();
 
   const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  useEffect(() => setIsMounted(true), []);
 
   useEffect(() => {
     if (isMobileOpen) setIsMobileOpen(false);
@@ -81,7 +79,7 @@ export default function InvestorSidebarPage() {
     flex items-center p-3 rounded-lg transition-all duration-200
     ${
       pathname === path
-        ? "bg-indigo-600 text-white font-medium"
+        ? "bg-blue-600 text-white font-medium"
         : "hover:bg-gray-100 text-gray-700"
     }
     ${isCollapsed ? "justify-center" : "justify-start"}
@@ -94,14 +92,14 @@ export default function InvestorSidebarPage() {
       text: "Home",
     },
     {
-      path: "/investor/profile",
-      icon: <PersonIcon className="w-5 h-5" />,
-      text: "Profile",
-    },
-    {
       path: "/investor/startups",
       icon: <RocketIcon className="w-5 h-5" />,
       text: "Startups",
+    },
+    {
+      path: "/investor/profile",
+      icon: <IdCardIcon className="w-5 h-5" />,
+      text: "Profile",
     },
     {
       path: "/investor/settings",
@@ -182,7 +180,7 @@ export default function InvestorSidebarPage() {
         <HamburgerMenuIcon />
       </button>
 
-      {/* STATIC PAGE CONTENT */}
+      {/* STATIC PAGE CONTENT (required for page.tsx) */}
       <main
         className={`flex-1 p-8 transition-all duration-300 ${
           isCollapsed ? "lg:pl-20" : "lg:pl-72"
@@ -192,7 +190,7 @@ export default function InvestorSidebarPage() {
           Investor Dashboard
         </h1>
         <p className="mt-2 text-gray-600">
-          Use the sidebar to explore startups and manage your investments.
+          Use the sidebar to explore startups and manage investments.
         </p>
       </main>
     </div>
