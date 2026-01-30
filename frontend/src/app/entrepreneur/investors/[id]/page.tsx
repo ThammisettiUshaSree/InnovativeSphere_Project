@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import EntrepreneurSidebar from "@/app/sidebar/entrepreneur/page";
+import EntrepreneurSidebar from "@/components/EntrepreneurSidebar";
+
 import {
   Card,
   CardContent,
