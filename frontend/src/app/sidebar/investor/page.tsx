@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
@@ -13,35 +14,18 @@ import {
   IdCardIcon,
   HamburgerMenuIcon,
   Cross1Icon,
-  BarChartIcon,
-  DashboardIcon,
 } from "@radix-ui/react-icons";
 import { toast } from "react-hot-toast";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
-interface SidebarProps {
-  children: React.ReactNode;
-}
-
-/**
- * Navigation item structure
- */
 interface NavItem {
   path: string;
   icon: React.ReactNode;
   text: string;
-  ariaLabel?: string;
 }
 
-/**
- * InvestorSidebar Component
- * Provides navigation and layout for investor users
- */
-export default function InvestorSidebar({ children }: SidebarProps) {
-  // State for mobile sidebar visibility
+export default function InvestorSidebarPage() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
-  // Persist collapsed state in localStorage
   const [isCollapsed, setIsCollapsed] = useLocalStorage(
     "investor-sidebar-collapsed",
     false
@@ -50,299 +34,111 @@ export default function InvestorSidebar({ children }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Handle client-side hydration
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
 
-  /**
-   * Close sidebar when navigating on mobile
-   */
-  useEffect(() => {
-    if (isMobileOpen) {
-      setIsMobileOpen(false);
-    }
-  }, [pathname]);
+  const toggleMobileSidebar = useCallback(
+    () => setIsMobileOpen((p) => !p),
+    []
+  );
 
-  /**
-   * Close sidebar when ESC key is pressed
-   */
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && isMobileOpen) {
-        setIsMobileOpen(false);
-      }
-    };
+  const toggleCollapse = useCallback(
+    () => setIsCollapsed((p: boolean) => !p),
+    [setIsCollapsed]
+  );
 
-    document.addEventListener("keydown", handleEscKey);
-    return () => {
-      document.removeEventListener("keydown", handleEscKey);
-    };
-  }, [isMobileOpen]);
+  const handleLogout = () => {
+    if (!confirm("Are you sure you want to log out?")) return;
+    localStorage.clear();
+    sessionStorage.clear();
+    toast.success("Logged out");
+    router.push("/auth/signin");
+  };
 
-  /**
-   * Toggle mobile sidebar visibility
-   */
-  const toggleMobileSidebar = useCallback(() => {
-    setIsMobileOpen((prev) => !prev);
-  }, []);
-
-  /**
-   * Toggle sidebar collapsed state
-   */
-  const toggleCollapse = useCallback(() => {
-    setIsCollapsed((prev) => !prev);
-  }, [setIsCollapsed]);
-
-  /**
-   * Handle logout with confirmation
-   */
-  const handleLogout = useCallback(() => {
-    if (window.confirm("Are you sure you want to log out?")) {
-      try {
-        // Clear all auth-related data
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        sessionStorage.clear();
-
-        // Show success message
-        toast.success("Logged out successfully");
-
-        // Redirect to sign in page
-        router.push("/auth/signin");
-      } catch (error) {
-        console.error("Logout error:", error);
-        toast.error("Error logging out. Please try again.");
-      }
-    }
-  }, [router]);
-
-  // Wait for client-side hydration to avoid hydration mismatch
-  if (!isMounted) {
-    return null;
-  }
-
-  /**
-   * Generate CSS class for navigation links
-   */
-  const linkClass = (path: string) => `
-    flex items-center p-3 rounded-lg transition-all duration-200
-    ${
+  const linkClass = (path: string) =>
+    `flex items-center p-3 rounded-lg transition ${
       pathname === path
-        ? "bg-blue-600 text-white font-medium shadow-sm"
-        : "hover:bg-gray-100 text-gray-700"
-    }
-    ${isCollapsed ? "justify-center" : "justify-start"}
-    focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50
-  `;
+        ? "bg-blue-600 text-white"
+        : "text-gray-700 hover:bg-gray-100"
+    } ${isCollapsed ? "justify-center" : "justify-start"}`;
 
-  /**
-   * Navigation items configuration
-   */
   const navItems: NavItem[] = [
-    {
-      path: "/investor/home",
-      icon: <HomeIcon className="w-5 h-5" />,
-      text: "Home",
-      ariaLabel: "Go to Investor Dashboard",
-    },
-    {
-      path: "/investor/startups",
-      icon: <RocketIcon className="w-5 h-5" />,
-      text: "Startups",
-      ariaLabel: "Browse Startups",
-    },
-    {
-      path: "/investor/profile",
-      icon: <IdCardIcon className="w-5 h-5" />,
-      text: "Profile",
-      ariaLabel: "Manage your Profile",
-    },
-    {
-      path: "/investor/settings",
-      icon: <GearIcon className="w-5 h-5" />,
-      text: "Settings",
-      ariaLabel: "Account Settings",
-    },
+    { path: "/investor/home", icon: <HomeIcon />, text: "Home" },
+    { path: "/investor/startups", icon: <RocketIcon />, text: "Startups" },
+    { path: "/investor/profile", icon: <IdCardIcon />, text: "Profile" },
+    { path: "/investor/settings", icon: <GearIcon />, text: "Settings" },
   ];
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Backdrop for mobile - click to close */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 lg:hidden z-40"
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
           onClick={toggleMobileSidebar}
-          aria-hidden="true"
-          data-testid="sidebar-backdrop"
         />
       )}
 
-      {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full flex flex-col overflow-x-hidden ${
+        className={`fixed top-0 left-0 z-50 h-full bg-white border-r shadow transition-all ${
           isCollapsed ? "w-20" : "w-72"
-        } bg-white border-r border-gray-200 shadow-lg transform transition-all duration-300 ease-in-out ${
-          isMobileOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 z-50`}
-        aria-label="Investor navigation"
-        role="navigation"
-        data-testid="investor-sidebar"
+        } ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
-        {/* Logo and Toggle Section */}
-        <div className="h-16 border-b border-gray-200 flex items-center justify-between relative">
-          <div className="flex items-center pl-4 sidebar-logo">
-            <Link
-              href="/investor/home"
-              className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded-md"
-              aria-label="Go to Investor Dashboard"
-            >
-              <div className="flex-shrink-0">
-                <Image
-                  src="/logo3.jpg"
-                  alt=""
-                  width={36}
-                  height={36}
-                  className="w-9 h-9"
-                  aria-hidden="true"
-                />
-              </div>
-              <span
-                className={`text-xl font-bold whitespace-nowrap ml-3 text-gray-900 ${
-                  isCollapsed ? "hidden" : "block"
-                }`}
-              >
-                InnovativeSphere
-              </span>
-            </Link>
-          </div>
+        <div className="h-16 flex items-center justify-between px-4 border-b">
+          <Link href="/investor/home" className="flex items-center gap-3">
+            <Image src="/logo3.jpg" alt="" width={36} height={36} />
+            {!isCollapsed && <span className="font-bold">InnovativeSphere</span>}
+          </Link>
 
-          {/* Desktop Collapse Toggle */}
-          <div className="sidebar-toggle">
-            <button
-              type="button"
-              onClick={toggleCollapse}
-              className="hidden lg:flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors absolute right-2 mr-1"
-              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              data-testid="collapse-toggle"
-            >
-              {isCollapsed ? (
-                <ChevronRightIcon
-                  className="w-5 h-5 text-gray-500"
-                  aria-hidden="true"
-                />
-              ) : (
-                <ChevronLeftIcon
-                  className="w-5 h-5 text-gray-500"
-                  aria-hidden="true"
-                />
-              )}
-            </button>
-          </div>
+          <button onClick={toggleCollapse} className="hidden lg:block">
+            {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </button>
 
-          {/* Mobile Close Button */}
-          <button
-            type="button"
-            onClick={toggleMobileSidebar}
-            className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors absolute right-2"
-            aria-label="Close sidebar"
-            title="Close sidebar"
-            data-testid="mobile-close-button"
-          >
-            <Cross1Icon className="w-5 h-5 text-gray-500" aria-hidden="true" />
+          <button onClick={toggleMobileSidebar} className="lg:hidden">
+            <Cross1Icon />
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav
-          className="flex-1 p-3 overflow-y-auto scrollbar-thin"
-          aria-label="Investor menu"
-        >
-          <ul className="space-y-2">
-            {navItems.map((item) => (
-              <li key={item.path}>
-                <Link
-                  href={item.path}
-                  className={linkClass(item.path)}
-                  aria-label={item.ariaLabel}
-                  aria-current={pathname === item.path ? "page" : undefined}
-                  title={isCollapsed ? item.text : undefined}
-                  data-testid={`nav-link-${item.text.toLowerCase()}`}
-                >
-                  <span className="flex-shrink-0" aria-hidden="true">
-                    {item.icon}
-                  </span>
-                  <span
-                    className={`transition-all duration-300 ${
-                      isCollapsed
-                        ? "opacity-0 w-0 absolute"
-                        : "opacity-100 w-auto ml-3"
-                    }`}
-                  >
-                    {item.text}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <nav className="p-3 space-y-2">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              href={item.path}
+              className={linkClass(item.path)}
+            >
+              {item.icon}
+              {!isCollapsed && <span className="ml-3">{item.text}</span>}
+            </Link>
+          ))}
         </nav>
 
-       
-
-        {/* Logout Button */}
-        <div className="mt-auto p-3 border-t border-gray-200">
+        <div className="p-3 border-t mt-auto">
           <button
-            type="button"
             onClick={handleLogout}
-            className={`w-full flex items-center rounded-lg bg-red-500 p-3 text-sm font-semibold text-white hover:bg-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-opacity-50 ${
-              isCollapsed ? "justify-center px-2" : "justify-start px-4"
-            }`}
-            aria-label="Logout from your account"
-            data-testid="logout-button"
+            className="w-full flex items-center justify-center gap-2 bg-red-500 text-white p-3 rounded hover:bg-red-600"
           >
-            <ExitIcon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
-            <span
-              className={`transition-all duration-300 ${
-                isCollapsed
-                  ? "opacity-0 w-0 absolute"
-                  : "opacity-100 w-auto ml-2"
-              }`}
-            >
-              Logout
-            </span>
+            <ExitIcon />
+            {!isCollapsed && "Logout"}
           </button>
         </div>
       </aside>
 
-      {/* Mobile Toggle Button */}
       <button
-        type="button"
         onClick={toggleMobileSidebar}
-        className="fixed top-4 left-4 p-3 bg-white rounded-lg border border-gray-200 shadow-lg lg:hidden z-50 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-        aria-label={isMobileOpen ? "Close sidebar menu" : "Open sidebar menu"}
-        aria-expanded={isMobileOpen}
-        aria-controls="investor-sidebar"
-        data-testid="mobile-menu-button"
+        className="fixed top-4 left-4 z-50 p-3 bg-white shadow rounded lg:hidden"
       >
-        {isMobileOpen ? (
-          <ChevronLeftIcon className="w-5 h-5" aria-hidden="true" />
-        ) : (
-          <HamburgerMenuIcon className="w-5 h-5" aria-hidden="true" />
-        )}
+        <HamburgerMenuIcon />
       </button>
 
-      {/* Main Content */}
       <main
-        className={`flex-1 transition-all duration-300 ${
+        className={`flex-1 p-8 transition-all ${
           isCollapsed ? "lg:pl-20" : "lg:pl-72"
-        } w-full`}
-        id="main-content"
-        role="main"
+        }`}
       >
-        {/* This prevents content from being hidden behind the mobile menu button */}
-        <div className="pt-12 lg:pt-0">{children}</div>
+        <h1 className="text-2xl font-bold">Investor Dashboard</h1>
+        <p className="mt-2 text-gray-600">
+          Use the sidebar to navigate.
+        </p>
       </main>
     </div>
   );
