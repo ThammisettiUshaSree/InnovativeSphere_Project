@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import EntrepreneurSidebar from '@/app/sidebar/entrepreneur/page';
+import EntrepreneurSidebar from '@/components/EntrepreneurSidebar';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Startup } from '@/types/startup';
